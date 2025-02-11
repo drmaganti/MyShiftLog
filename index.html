@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        h1 {
+            border-bottom: 2px solid #ddd; /* Add the divider line */
+            padding-bottom: 10px; /* Add some padding below the heading */
+            margin-bottom: 20px;
+        }
+        h4 {
+            padding-bottom: 10px;
+        }
+        body {
+            background-color: #f5f5f5; /* Very light gray background */
+            font-family: sans-serif;
+            display: flex; /* Center the form */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure full viewport height */
+            margin: 0; /* Remove default body margins */
+        }
+
+        .container {
+            background-color: white;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 800px; /* Adjust as needed */
+            
+        }
+        .container h2{
+            margin-bottom: 20px;
+        }
+        .container p{
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .name-fields{
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #007bff; /* Example blue button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-review {
+            display: block;
+            float: right;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            align-items: ;
+        
+        }
+        .btn-review:disabled {
+            background-color: #ccc;
+            cursor: default;
+        }
+        .btn-review:hover {
+            background-color: #37813E;
+            color: white;
+        }
+
+        body { padding: 20px; }
+        .container { max-width: 900px; }
+        select.form-select { width: auto; flex-grow: 1; }
+        .table-responsive { overflow-x: auto; }
+
+        /* General Table Styling */
+        .table {
+            margin-bottom: 30px;
+        }
+        .table th, .table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left; /* Align text to the left by default */
+        }
+        .table th {
+            background-color: #f8f9fa; /* Light gray background for headers */
+            font-weight: 600; /* Slightly bolder header text */
+        }
+        #cash-table td:first-child:before,
+        #settlements-table td:first-child:before { 
+            content: attr(data-label); 
+            font-weight: bold;
+            font-weight: 600; /* Slightly bolder header text */
+        }
+        .btn-primary{
+            margin-bottom: 30px;
+        }
+        .price-inputs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .price-inputs .form-group { /* Style the containing divs as form groups */
+            flex: 1; /* Distribute space evenly */
+        }
+        .price-inputs label{
+            margin-bottom: 5px;
+            display: block;
+            font-weight: bold;
+            font-weight: 600; /* Slightly bolder header text */
+        }
+        .price-inputs input[type="number"] { /* Style the number inputs */
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+
+
+        /* Responsive Table Styling */
+        @media (max-width: 767px) {
+            .table thead { display: none; }
+            .table tr { 
+                display: block; 
+                border: 1px solid #ddd; 
+                margin-bottom: 15px; 
+                padding: 10px;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+            .table td { 
+                display: block; 
+                border: none; 
+                padding-left: 0;
+                padding-bottom: 8px;
+                position: relative;
+                clear: both;
+            }
+            .table td:last-child{
+                padding-bottom: 0;
+            }
+            .table td:before { 
+                content: attr(data-label); 
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #777;
+            }
+            .btn-danger{
+                float: right;
+            }
+
+            .form-control, .form-select{
+                width: 100%;
+            }
+            .price-inputs {
+                flex-direction: column;
+                gap: 10px;
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #777;
+            }
+
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shift Log</h1>
+
+        <h4>Pump Readings</h4>
+        <div class="table-responsive">
+
+            <div class="price-inputs">
+                <div class="form-group">
+                    <label for="ms-price">MS Price (₹):</label>
+                    <input type="number" id="ms-price" step="0.01" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="hsd-price">HSD Price (₹):</label>
+                    <input type="number" id="hsd-price" step="0.01" class="form-control">
+                </div>
+            </div>
+            <table class="table table-bordered" id="pump-table">
+                <thead>
+                    <tr>
+                        <th>Pump</th>
+                        <th>Fuel</th>
+                        <th>Initial Reading</th>
+                        <th>Final Reading</th>
+                        <th>Test</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="pump-table-body">
+                    <tr>
+                        <td data-label="Pump"><select class="form-select"><option value="pump 1">Pump 1</option><option value="pump2">Pump 2</option><option value="pump3">Pump 3</option><option value="pump4">Pump 4</option></select></td>
+                        <td data-label="Fuel"><select class="form-select"><option value="HSD">HSD</option><option value="MS">MS</option></select></td>
+                        <td data-label="Initial Reading"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="Final Reading"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="Test"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="Remove"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-primary" onclick="addRow()">Add Pump</button>
+        <tr></tr>
+
+        <h4>Payments Received</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="cash-table">
+                <thead>
+                    <tr>
+                        <th>Payment Method</th>
+                        <th>Initial Amount ₹</th>
+                        <th>Final Amount ₹</th>
+                    </tr>
+                </thead>
+                <tbody id="cash-table-body">
+                    <tr>
+                        <td data-label="Cash"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="cashInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="cashFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="PhonePe Business"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="phonepebusinessInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="phonepebusinessFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="PhonePe Private"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="phonepeprivateInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="phonepeprivateFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="Google Pay"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="googlepayInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="googlepayFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="BharatPe"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="bharatpeInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="bharatpeFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="Paytm"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="paytmInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="paytmFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td data-label="Kwik Pay"></td>
+                        <td data-label="Initial Amount INR"><input type="number" id="kwikpayInitial" step="0.01" class="form-control"></td>
+                        <td data-label="Final Amount INR"><input type="number" id="kwikpayFinal" step="0.01" class="form-control"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4>Settlements</h4>
+        <table class="table table-bordered" id="settlements-table">
+            <thead>
+                <tr>
+                    <th>Payment Method</th>
+                    <th>Amount ₹</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Swipe 1"></td>
+                    <td data-label="Amount INR"><input type="number" id="swipe1Amount" step="0.01" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td data-label="Swipe 2"></td>
+                    <td data-label="Amount INR"><input type="number" id="swipe2Amount" step="0.01" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td data-label="Advance"></td>
+                    <td data-label="Amount INR"><input type="number" id="advanceAmount" step="0.01" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td data-label="Advance Bank Account"></td>
+                    <td data-label="Amount INR"><input type="number" id="advancebankaccountAmount" step="0.01" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td data-label="Credits"></td>
+                    <td data-label="Amount INR"><input type="number" id="creditsAmount" step="0.01" class="form-control"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-review" id="reviewButton" disabled>Review</button>
+    </div>
+    <script>
+        const reviewButton = document.getElementById('reviewButton');
+        const allInputs = document.querySelectorAll('input[type="number"], select');
+
+        function addRow() {
+            const tableBody = document.getElementById("pump-table-body");
+            const newRow = tableBody.insertRow();
+
+            const cells = [
+                '<td data-label="Pump"><select class="form-select"><option value="pump 1">Pump 1</option><option value="pump2">Pump 2</option><option value="pump3">Pump 3</option><option value="pump4">Pump 4</option></select></td>',
+                '<td data-label="Fuel"><select class="form-select"><option value="HSD">HSD</option><option value="MS">MS</option></select></td>',
+                '<td data-label="Initial Reading"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="Final Reading"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="Test"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="Remove"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>'
+            ];
+
+            for (let i = 0; i < cells.length; i++) {
+                newRow.innerHTML += cells[i]; // Use innerHTML to add the whole cell content
+            }
+        }
+
+        function removeRow(button) {
+            button.parentNode.parentNode.remove();
+        }
+
+
+        function checkForm() {
+            let allFilled = true;
+            allInputs.forEach(input => {
+                if (!input.value) {
+                    allFilled = false;
+                }
+            });
+            reviewButton.disabled = !allFilled;
+        }
+
+        allInputs.forEach(input => {
+            input.addEventListener('input', checkForm); // Check on every input change
+            input.addEventListener('change', checkForm); // Check on select changes
+        });
+
+        reviewButton.addEventListener('click', function() {
+    const pumpData = [];
+    const pumpRows = document.querySelectorAll('#pump-table-body tr');
+    if (pumpRows && pumpRows.length > 0) { // Check if pumpRows exists and has elements
+        pumpRows.forEach(row => {
+            const pump = row.querySelector('td[data-label="Pump"] select')?.value || ""; // Use optional chaining and default value
+            const fuel = row.querySelector('td[data-label="Fuel"] select')?.value || "";
+            const initialReading = row.querySelector('td[data-label="Initial Reading"] input')?.value || "";
+            const finalReading = row.querySelector('td[data-label="Final Reading"] input')?.value || "";
+            const test = row.querySelector('td[data-label="Test"] input')?.value || "";
+            pumpData.push({ pump, fuel, initialReading, finalReading, test });
+        });
+    }
+
+    const paymentData = [];
+
+    const paymentMethods = ["Cash", "PhonePe Business", "PhonePe Private", "Google Pay", "BharatPe", "Paytm", "Kwik Pay"];
+    paymentMethods.forEach(method => {
+        const initialAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Initial");
+        const finalAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Final");
+        const initialAmount = initialAmountElement?.value || ""; 
+        const finalAmount = finalAmountElement?.value || "";
+
+        paymentData.push({ method, initialAmount, finalAmount });
+    });
+    str = JSON.stringify(paymentData);
+    console.log("paymentData: "+ str);
+
+    const settlementData = [];
+    const settlementMethods = ["Swipe 1", "Swipe 2", "Advance", "Advance Bank Account", "Credits"];
+    settlementMethods.forEach(method => {
+        console.log(method.toLowerCase().replace(" ", "") + "Amount");
+        const amountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Amount");
+        const amount = amountElement?.value || ""; // Use optional chaining
+        settlementData.push({ method, amount });
+    });
+    str = JSON.stringify(settlementData);
+    console.log("settlementData: "+ str);
+
+    const msPriceElement = document.getElementById('ms-price');
+    const hsdPriceElement = document.getElementById('hsd-price');
+    const msPrice = msPriceElement?.value || "";
+    const hsdPrice = hsdPriceElement?.value || "";
+
+    localStorage.setItem('shiftLogData', JSON.stringify({ pumpData, paymentData, settlementData, msPrice, hsdPrice }));
+    window.open('review.html', '_self');
+});
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
