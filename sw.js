@@ -3,20 +3,12 @@ var self = this;
 var filesToCache = [
     '/',
     '/index.html',
-    '/allOtherNames.html',
-    './assets/css/index.css',
-    './assets/css/spacing.css',
-    './assets/img/apple-touch-icon.png',
-    './assets/img/favicon.png',
-    './assets/img/logo.svg',
-    './assets/img/other-logo.png',
-    './assets/js/globalConstant.js',
-    './assets/js/index.js'
+    '/review.html'
 ];
 
 self.addEventListener('install', function (e) {
     e.waitUntil(
-        caches.open('app-name').then(function (cache) {
+        caches.open('MyShiftLog').then(function (cache) {
             return cache.addAll(filesToCache);
         })
     );
