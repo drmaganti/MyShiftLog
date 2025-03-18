@@ -139,7 +139,16 @@
             box-sizing: border-box;
         }
 
+        .denomination-inputs {
+            display: grid;
+            grid-template-columns: 150px 100px; /* Two columns for label and input */
+            gap: 10px;
+            margin-bottom: 10px;
+        }
 
+        .denomination-inputs label {
+            font-weight: normal; /* Make denomination labels less bold */
+        }
 
         /* Responsive Table Styling */
         @media (max-width: 767px) {
@@ -233,7 +242,64 @@
         <button class="btn btn-primary" onclick="addRow()">Add Pump</button>
         <tr></tr>
 
-        <h4>Payments Received</h4>
+        <h4>Lubs</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="pump-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Initial</th>
+                        <th>Received</th>
+                        <th>Final</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="lub-table-body">
+                    <tr>
+                        <td data-label="Item"><select class="form-select"><option value="20ml">20 ML</option><option value="40ml">40 ML</option><option value="900ml">900 ML</option><option value="1000mltwowheeler">1000 ML 2-Wheeler</option><option value="1000mlfourwheeler">1000 ML 4-Wheeler</option><option value="3.5ml">3.5 ML</option><option value="20lts">20 Litres</option><option value="adblue">AD BLUE</option><option value="1ltdistilwater">1 LT Distil Water</option><option value="5ltdistilwater">5 LT Distil Water</option></select></td>
+                        <td data-label="Price"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="InitialQuantity"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="ReceivedQuantity"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="FinalQuantity"><input type="number" step="0.01" class="form-control"></td>
+                        <td data-label="Remove"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-primary" onclick="addLubRow()">Add Lubs</button>
+        <tr></tr>
+
+        <div class="cash-section">
+            <h4>Cash Payments</h4>
+            <div class="denomination-inputs">
+                <label for="cashInitial">Initial Amount (₹):</label>
+                <input type="number" id="cashInitial" step="0.01" class="form-control">
+
+                <label>Final Amount (₹):</label> <br>
+                <label for="500-notes">₹500:</label>
+                <input type="number" id="500-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="200-notes">₹200:</label>
+                <input type="number" id="200-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="100-notes">₹100:</label>
+                <input type="number" id="100-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="50-notes">₹50:</label>
+                <input type="number" id="50-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="20-notes">₹20:</label>
+                <input type="number" id="20-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="10-notes">₹10:</label>
+                <input type="number" id="10-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="5-notes">₹5:</label>
+                <input type="number" id="5-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="2-notes">₹2:</label>
+                <input type="number" id="2-notes" step="1" min="0" class="form-control denomination-input">
+                <label for="1-notes">₹1:</label>
+                <input type="number" id="1-notes" step="1" min="0" class="form-control denomination-input">
+            </div>
+
+        </div>
+
+        <h4>Online Payments</h4>
         <div class="table-responsive">
             <table class="table table-bordered" id="cash-table">
                 <thead>
@@ -244,11 +310,7 @@
                     </tr>
                 </thead>
                 <tbody id="cash-table-body">
-                    <tr>
-                        <td data-label="Cash"></td>
-                        <td data-label="Initial Amount INR"><input type="number" id="cashInitial" step="0.01" class="form-control"></td>
-                        <td data-label="Final Amount INR"><input type="number" id="cashFinal" step="0.01" class="form-control"></td>
-                    </tr>
+
                     <tr>
                         <td data-label="PhonePe Business"></td>
                         <td data-label="Initial Amount INR"><input type="number" id="phonepebusinessInitial" step="0.01" class="form-control"></td>
@@ -312,6 +374,10 @@
                     <td data-label="Credits"></td>
                     <td data-label="Amount INR"><input type="number" id="creditsAmount" step="0.01" class="form-control"></td>
                 </tr>
+                <tr>
+                    <td data-label="Expenses"></td>
+                    <td data-label="Amount INR"><input type="number" id="expensesAmount" step="0.01" class="form-control"></td>
+                </tr>
             </tbody>
         </table>
         <button class="btn btn-review" id="reviewButton" disabled>Review</button>
@@ -338,6 +404,26 @@
             }
         }
 
+        function addLubRow() {
+            const tableBody = document.getElementById("lub-table-body");
+            const newRow = tableBody.insertRow();
+
+
+            const cells= [
+                '<td data-label="Item"><select class="form-select"><option value="20ml">20 ML</option><option value="40ml">40 ML</option><option value="900ml">900 ML</option><option value="1000mltwowheeler">1000 ML 2-Wheeler</option><option value="1000mlfourwheeler">1000 ML 4-Wheeler</option><option value="3.5ml">3.5 ML</option><option value="20lts">20 Litres</option><option value="adblue">AD BLUE</option><option value="1ltdistilwater">1 LT Distil Water</option><option value="5ltdistilwater">5 LT Distil Water</option></select></td>',
+                '<td data-label="Price"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="InitialQuantity"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="ReceivedQuantity"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="FinalQuantity"><input type="number" step="0.01" class="form-control"></td>',
+                '<td data-label="Remove"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>'
+            ];
+
+            for (let i = 0; i < cells.length; i++) {
+                newRow.innerHTML += cells[i]; // Use innerHTML to add the whole cell content
+            }
+        }
+
+
         function removeRow(button) {
             button.parentNode.parentNode.remove();
         }
@@ -359,52 +445,84 @@
         });
 
         reviewButton.addEventListener('click', function() {
-    const pumpData = [];
-    const pumpRows = document.querySelectorAll('#pump-table-body tr');
-    if (pumpRows && pumpRows.length > 0) { // Check if pumpRows exists and has elements
-        pumpRows.forEach(row => {
-            const pump = row.querySelector('td[data-label="Pump"] select')?.value || ""; // Use optional chaining and default value
-            const fuel = row.querySelector('td[data-label="Fuel"] select')?.value || "";
-            const initialReading = row.querySelector('td[data-label="Initial Reading"] input')?.value || "";
-            const finalReading = row.querySelector('td[data-label="Final Reading"] input')?.value || "";
-            const test = row.querySelector('td[data-label="Test"] input')?.value || "";
-            pumpData.push({ pump, fuel, initialReading, finalReading, test });
+            const pumpData = [];
+            const pumpRows = document.querySelectorAll('#pump-table-body tr');
+            if (pumpRows && pumpRows.length > 0) { // Check if pumpRows exists and has elements
+                pumpRows.forEach(row => {
+                const pump = row.querySelector('td[data-label="Pump"] select')?.value || ""; // Use optional chaining and default value
+                const fuel = row.querySelector('td[data-label="Fuel"] select')?.value || "";
+                const initialReading = row.querySelector('td[data-label="Initial Reading"] input')?.value || "";
+                const finalReading = row.querySelector('td[data-label="Final Reading"] input')?.value || "";
+                const test = row.querySelector('td[data-label="Test"] input')?.value || "";
+                pumpData.push({ pump, fuel, initialReading, finalReading, test });
+                });
+            }
+
+            const lubData = [];
+            const lubRows = document.querySelectorAll('#lub-table-body tr');
+            if (lubRows && lubRows.length > 0) { // check if lubRows exists and has elements
+                lubRows.forEach(row=> {
+                    const lubitem = row.querySelector('td[data-label="Item"] select')?.value || ""; //use optional chaining and default value
+                    const lubprice = row.querySelector('td[data-label="Price"] input')?.value || "";
+                    const initialQ = row.querySelector('td[data-label="InitialQuantity"] input')?.value || "";
+                    const receivedQ = row.querySelector('td[data-label="ReceivedQuantity"] input')?.value || "";
+                    const finalQ = row.querySelector('td[data-label="FinalQuantity"] input')?.value || "";
+                    lubData.push({lubitem, lubprice, initialQ, receivedQ, finalQ});
+                });
+            }
+            //adding notes need to be completed
+            const cashNotes = [];
+
+            const currencyDominion = ["500-notes", "200-notes", "100-notes", "50-notes", "20-notes", "10-notes", "5-notes", "2-notes", "1-notes"];
+            currencyDominion.forEach(note => {
+                const numberofnotes = document.getElementById(note);
+                const allnotes = numberofnotes?.value || "";
+
+                cashNotes.push({note, allnotes});
+            });
+
+            str = JSON.stringify(cashNotes);
+            console.log("Notes: "+ str);
+
+        
+
+            const paymentData = [];
+
+            const paymentMethods = ["PhonePe Business", "PhonePe Private", "Google Pay", "BharatPe", "Paytm", "Kwik Pay"];
+            paymentMethods.forEach(method => {
+                const initialAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Initial");
+                const finalAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Final");
+                const initialAmount = initialAmountElement?.value || ""; 
+                const finalAmount = finalAmountElement?.value || "";
+
+                paymentData.push({ method, initialAmount, finalAmount });
+            });
+
+            str = JSON.stringify(paymentData);
+            console.log("paymentData: "+ str);
+
+            const settlementData = [];
+            const settlementMethods = ["Swipe 1", "Swipe 2", "Advance", "Advance Bank Account", "Credits", "Expenses"];
+            settlementMethods.forEach(method => {
+                console.log(method.toLowerCase().replace(" ", "") + "Amount");
+                const amountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Amount");
+                const amount = amountElement?.value || ""; // Use optional chaining
+                settlementData.push({ method, amount });
+            });
+            str = JSON.stringify(settlementData);
+            console.log("settlementData: "+ str);
+
+            const msPriceElement = document.getElementById('ms-price');
+            const hsdPriceElement = document.getElementById('hsd-price');
+            const initialCashElement = document.getElementById('cashInitial');
+        
+            const msPrice = msPriceElement?.value || "";
+            const hsdPrice = hsdPriceElement?.value || "";
+            const initialCash = initialCashElement?.value || "";
+
+            localStorage.setItem('shiftLogData', JSON.stringify({ pumpData, lubData, cashNotes, initialCash, paymentData, settlementData, msPrice, hsdPrice }));
+            window.open('review.html', '_self');
         });
-    }
-
-    const paymentData = [];
-
-    const paymentMethods = ["Cash", "PhonePe Business", "PhonePe Private", "Google Pay", "BharatPe", "Paytm", "Kwik Pay"];
-    paymentMethods.forEach(method => {
-        const initialAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Initial");
-        const finalAmountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Final");
-        const initialAmount = initialAmountElement?.value || ""; 
-        const finalAmount = finalAmountElement?.value || "";
-
-        paymentData.push({ method, initialAmount, finalAmount });
-    });
-    str = JSON.stringify(paymentData);
-    console.log("paymentData: "+ str);
-
-    const settlementData = [];
-    const settlementMethods = ["Swipe 1", "Swipe 2", "Advance", "Advance Bank Account", "Credits"];
-    settlementMethods.forEach(method => {
-        console.log(method.toLowerCase().replace(" ", "") + "Amount");
-        const amountElement = document.getElementById(method.toLowerCase().replaceAll(" ", "") + "Amount");
-        const amount = amountElement?.value || ""; // Use optional chaining
-        settlementData.push({ method, amount });
-    });
-    str = JSON.stringify(settlementData);
-    console.log("settlementData: "+ str);
-
-    const msPriceElement = document.getElementById('ms-price');
-    const hsdPriceElement = document.getElementById('hsd-price');
-    const msPrice = msPriceElement?.value || "";
-    const hsdPrice = hsdPriceElement?.value || "";
-
-    localStorage.setItem('shiftLogData', JSON.stringify({ pumpData, paymentData, settlementData, msPrice, hsdPrice }));
-    window.open('review.html', '_self');
-});
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
