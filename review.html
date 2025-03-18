@@ -11,29 +11,146 @@
 
 
 
-    <style>
-        /* Basic table styling */
+ <style>
+    /* Reset default margins and paddings for the whole document */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+    }
+
+    body {
+        font-family: sans-serif;
+        font-size: 10pt; /* Slightly smaller base font size */
+        line-height: 1.2; /* Closer line spacing */
+    }
+
+    .container {
+        max-width: 100%; /* Take full width */
+        padding: 10px; /* Reduced padding */
+    }
+
+    h1 {
+        font-size: 1.5em; /* Smaller heading */
+        margin-bottom: 0.5em; /* Reduced bottom margin */
+        text-align: center; /* Center the main heading */
+    }
+
+    h4 {
+        font-size: 1.1em; /* Smaller subheadings */
+        margin-top: 0.8em; /* Reduced top margin */
+        margin-bottom: 0.4em; /* Reduced bottom margin */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 6px; /* Further reduced cell padding */
+        text-align: left;
+        font-size: 0.9em; /* Smaller table font size */
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    #summaryTable {
+        margin-bottom: 10px; /* Reduced margin for summary table */
+    }
+
+    #summaryTable td {
+        padding: 8px; /* Add padding to the summary table cells */
+        vertical-align: top; /* Align content to the top of the cells */
+    }
+
+    #salesSummary,
+    #cashSummary {
+        width: 50%; /* Distribute the content evenly */
+    }
+
+    .button-group {
+        text-align: center; /* Center the buttons */
+        margin-top: 10px; /* Reduced margin above buttons */
+    }
+
+    .btn {
+        margin: 0 5px; /* Spacing between buttons */
+        font-size: 0.9em; /* Smaller button font size */
+        padding: 5px 10px; /* Reduced button padding */
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-size: 8pt; /* Even smaller font for print */
+        }
+
+        @page {
+            size: letter;
+            margin: 0.2in; /* Further reduced print margins */
+        }
+
+        .container {
+            padding: 0;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1.3em; /* Smaller heading in print */
+        }
+
+        h4 {
+            font-size: 1em;
+        }
+
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            font-size: 0.75em; /* Very small table font */
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+
+        th,
+        td {
+            padding: 3px; /* Minimal cell padding */
         }
-        th {
-            background-color: #f2f2f2;
+
+        #review-content {
+            page-break-inside: avoid;
+            transform: scale(0.75); /* More aggressive scaling */
+            transform-origin: top left;
         }
-        body { padding: 20px; }
-        .container { max-width: 900px; }
+
+        .button-group {
+            display: none; /* Hide buttons when printing */
+        }
+    }
+</style>
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Shift Log Review</h1>
+
+        <table id="summaryTable">
+            <thead>
+                <tr>
+                    <th>Sales Summary</th>
+                    <th>Cash Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="salesSummary"></td>
+                    <td id="cashSummary"></td>
+                </tr>
+            </tbody>
+        </table>
 
         <div id="review-content"></div>
             <div class="button-group">
@@ -47,6 +164,7 @@
     <script>
         const reviewContent = document.getElementById('review-content');
         const shiftLogData = JSON.parse(localStorage.getItem('shiftLogData'));
+        console.log("shiftLog: "+ shiftLogData);
 
         if (shiftLogData) {
             let html = '';
@@ -56,16 +174,57 @@
             <p>HSD Price: ₹${shiftLogData.hsdPrice}</p>`;
 
             html += '<h4>Pump Readings</h4><table id="pumpReadingsTable"><thead><tr><th>Pump</th><th>Fuel</th><th>Initial Reading</th><th>Final Reading</th><th>Test</th><th>Pump Earnings (₹)</th></tr></thead><tbody>';
+            console.log(shiftLogData.pumpData);
             shiftLogData.pumpData.forEach(item => {
                 html += `<tr data-fuel="${item.fuel}" data-initial="${item.initialReading}" data-final="${item.finalReading}" data-test="${item.test}"><td>${item.pump}</td><td>${item.fuel}</td><td>${item.initialReading}</td><td>${item.finalReading}</td><td>${item.test}</td><td></td></tr>`;
             });
-            html += '</tbody><tfoot><tr><td colspan="5">Total Earnings (₹)</td><td id="totalPumpEarnings">0</td></tr></tfoot></table>';
+            html += '</tbody><tfoot><tr><td colspan="5">Total Fuel Sales (₹)</td><td id="totalPumpEarnings">0</td></tr></tfoot></table>';
+
+            // add Lub info
+
+            html += '<h4>Lubs sold</h4><table id="lubsSoldTable"><thead><tr><th>Item</th><th>Price</th><th>Initial</th><th>Received</th><th>Final</th><th>Sale (₹)</th></tr></thead><tbody>';
+            console.log(shiftLogData.lubData);
+            shiftLogData.lubData.forEach(item => {
+                html += `<tr data-lubitem="${item.lubitem}" data-price="${item.lubprice}" data-initialQ="${item.initialQ}" data-receivedQ="${item.receivedQ}" data-finalQ="${item.finalQ}"><td>${item.lubitem}</td><td>${item.lubprice}</td><td>${item.initialQ}</td><td>${item.receivedQ}</td><td>${item.finalQ}</td><td></td></tr>`;
+            });
+            html += '</tbody><tfoot><tr><td colspan="5">Total Lub Sales (₹)</td><td id="totalLubEarnings">0</td></tr></tfoot></table>';
+            
 
             html += '<h4>Payments Received</h4><table id="paymentsReceivedTable"><thead><tr><th>Payment Method</th><th>Initial Amount (₹)</th><th>Final Amount (₹)</th><th>Earnings (₹)</th></tr></thead><tbody>';
             shiftLogData.paymentData.forEach(item => {
                 html += `<tr data-initial="${item.initialAmount}" data-final="${item.finalAmount}"><td>${item.method}</td><td>${item.initialAmount}</td><td>${item.finalAmount}</td><td></td></tr>`;
             });
             html += '</tbody><tfoot><tr><td colspan="3">Total Earnings</td><td id="totalPaymentsEarnings">0</td></tr></tfoot></table>';
+
+            // Cash Notes Table
+            const initialCash = shiftLogData.initialCash;
+            html += '<h4>Cash Notes</h4><table id="cashNotesTable"><thead><tr>';
+            const currencyDenominations = ["500", "200", "100", "50", "20", "10", "5", "2", "1"];
+            currencyDenominations.forEach(denomination => {
+                html += `<th>₹${denomination}</th>`;
+            });
+            html += '<th>Total (₹)</th></tr></thead><tbody><tr>';
+            let totalCash = 0;
+            shiftLogData.cashNotes.forEach(note => {
+                html += `<td>${note.allnotes}</td>`;
+            });
+            currencyDenominations.forEach((denomination, index)=>{
+                const noteValue = parseInt(denomination);
+                const numberOfNotes = parseInt(shiftLogData.cashNotes[index].allnotes) || 0;
+                totalCash += noteValue * numberOfNotes;
+            });
+            
+            console.log("initial Cash:" + initialCash);
+            const finalCash = totalCash - initialCash;
+            const totalCASHReceived = totalCash;
+
+            html += `<td>${totalCash}</td></tr></tbody></table>`;
+
+            // Initial and Final Cash Display
+            //html += `<h4>Cash Summary</h4>
+           // <p>Initial Cash: ₹<span class="math-inline">${shiftLogData.initialCash}</p>
+           // <p>Final Cash: ₹</span>${totalCash - shiftLogData.initialCash}</p>`;
+            
 
             html += '<h4>Settlements</h4><table id="settlementsTable"><thead><tr><th>Payment Method</th><th>Amount ₹</th></tr></thead><tbody>';
             shiftLogData.settlementData.forEach(item => {
@@ -93,6 +252,31 @@
             }
 
             document.getElementById('totalPumpEarnings').textContent = totalPumpEarnings.toFixed(2);
+
+            //Lub sales calculations
+            //Lub sales calculations
+            const lubsSoldTable = document.getElementById('lubsSoldTable');
+            const lubrows = lubsSoldTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            let totalLubEarnings = 0;
+            console.log("table length:" + lubrows.length);
+            // Corrected loop: Use lubrows.length here
+            for (let i = 0; i < lubrows.length; i++) {
+
+                const lubrow = lubrows[i];
+                console.log(lubrow);
+                const initialQ = parseInt(lubrow.dataset.initialq);
+                const receivedQ = parseInt(lubrow.dataset.receivedq);
+                const finalQ = parseInt(lubrow.dataset.finalq);
+                const lubprice = parseFloat(lubrow.dataset.price);
+
+                const lubearnings = (initialQ + receivedQ - finalQ) * lubprice;
+                console.log("initialQ:" + initialQ);
+                console.log(lubearnings);
+                lubrow.cells[5].textContent = lubearnings.toFixed(2);
+                totalLubEarnings += lubearnings;
+            }
+
+            document.getElementById('totalLubEarnings').textContent = totalLubEarnings.toFixed(2);
 
             // Payments Received Calculations
             const paymentsTable = document.getElementById('paymentsReceivedTable');
@@ -124,42 +308,42 @@
 
             document.getElementById('totalSettlements').textContent = totalSettlements.toFixed(2);
 
+            //Summary Table Calculations
+            const salesSummary = document.getElementById('salesSummary');
+            const cashSummary = document.getElementById('cashSummary');
 
+            const salesTotal = totalPumpEarnings + totalLubEarnings;
+            const cashTotal = totalCash + totalPaymentsEarnings + totalSettlements - shiftLogData.initialCash;
+
+            salesSummary.innerHTML = `
+                Pump Earnings: ₹${totalPumpEarnings.toFixed(2)}<br>
+                Lube Sales: ₹${totalLubEarnings.toFixed(2)}
+            `;
+
+            cashSummary.innerHTML = `
+                Initial Cash: ₹${shiftLogData.initialCash}<br>
+                Cash Received: ₹${totalCash.toFixed(2)}<br>
+                Payments Received: ₹${totalPaymentsEarnings.toFixed(2)}<br>
+                Settlements: ₹${totalSettlements.toFixed(2)}
+            `;
+
+            // Add a new row for totals
+            const summaryTable = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
+            const newRow = summaryTable.insertRow();
+            const salesTotalCell = newRow.insertCell(0);
+            const cashTotalCell = newRow.insertCell(1);
+
+            salesTotalCell.innerHTML = `<strong>Total Sales: ₹${salesTotal.toFixed(2)}</strong>`;
+            cashTotalCell.innerHTML = `<strong>Total Cash: ₹${cashTotal.toFixed(2)}</strong>`;
         } else {
             reviewContent.innerHTML = '<p>No data found.</p>';
         }
 
-        // function shareAsPDF() {
-        //     window.jsPDF = window.jspdf.jsPDF;
-        //     const doc = new jsPDF();
-        //     // Add content to PDF
-        //     doc.fromHTML(document.getElementById('review-content').innerHTML, 15, 15);
-        //     // Save the PDF
 
-        //     doc.save('shift_log_review.pdf');
-        //     const link = document.createElement('a');
-        //     link.href = URL.createObjectURL(doc.output('blob'));
-        //     link.download = 'shift_log_review.pdf';
-        //     link.click();
-        //  }
-
-         const { jsPDF } = window.jspdf;
-
-        // function shareAsPDF() {
-        //     const doc = new jsPDF();
-            
-        //     // Capture the review content using html2canvas
-        //     html2canvas(document.getElementById('review-content')).then(canvas => {
-        //         const imgData = canvas.toDataURL('image/png');
-        //         const imgWidth = 190; // A4 width in mm
-        //         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-                
-        //         doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-        //         doc.save('shift_log_review.pdf');
-        //     });
-        // }
+         
 
 
+        const { jsPDF } = window.jspdf;
         async function shareAsPDF() {
             const doc = new jsPDF();
             
