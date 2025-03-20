@@ -12,6 +12,17 @@
 
 
  <style>
+    #shiftInfo {
+        width: 100%; /* Take full width */
+        margin-bottom: 10px; /* Add some space below the table */
+    }
+
+    #shiftInfo td {
+        border: none; /* Remove borders */
+        padding: 5px; /* Reduce padding for compactness */
+        font-size: 0.9em; /* Adjust font size if needed */
+    }
+
     /* Reset default margins and paddings for the whole document */
     * {
         margin: 0;
@@ -129,13 +140,42 @@
             display: none; /* Hide buttons when printing */
         }
     }
+    .pdf-generation {
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important; /* Allow content to overflow without scrollbars */
+        position: static !important; /* Prevent absolute/fixed positioning issues */
+        transform: none !important; /* Remove any scaling */
+        page-break-inside: avoid !important; /* Prevent page breaks within elements */
+    }
 </style>
-    </style>
+    
 </head>
 <body>
 
     <div class="container">
         <h1>Shift Log Review</h1>
+
+        <table id="shiftInfo">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="name"></td>
+                    <td id="date"></td>
+                    <td id="startTime"></td>
+                    <td id="endTime"></td>
+                </tr>
+                
+            </tbody>
+
+        </table>
 
         <table id="summaryTable">
             <thead>
@@ -156,18 +196,29 @@
             <div class="button-group">
             <button class="btn btn-secondary" onclick="window.history.back();">Previous</button>
             <button class="btn btn-primary" onclick="window.print()">Print</button>
-            <button class="btn btn-success" onclick="shareAsPDF()">Share as PDF</button> 
+            <!--<button class="btn btn-success" onclick="shareAsPDF()">Share as PDF</button> -->
         </div>
     </div>
     
     
     <script>
+
+        if (performance.navigation.type === 1) {
+            // localStorage.removeItem('shiftLogData'); // Uncomment to clear old data if needed
+            window.location.reload();
+        }
         const reviewContent = document.getElementById('review-content');
         const shiftLogData = JSON.parse(localStorage.getItem('shiftLogData'));
         console.log("shiftLog: "+ shiftLogData);
 
         if (shiftLogData) {
             let html = '';
+
+            document.getElementById('name').textContent = shiftLogData.name;
+            document.getElementById('date').textContent = shiftLogData.date;
+            document.getElementById('startTime').textContent = shiftLogData.startTime;
+            document.getElementById('endTime').textContent = shiftLogData.endTime;
+
 
             html += `<h4>Fuel Prices</h4>
             <p>MS Price: ₹${shiftLogData.msPrice}</p>
@@ -346,14 +397,31 @@
         const { jsPDF } = window.jspdf;
         async function shareAsPDF() {
             const doc = new jsPDF();
-            
-            // Capture content using html2canvas
-            const canvas = await html2canvas(document.getElementById('review-content'));
+            const reviewContent = document.getElementById('review-content');
+
+            // Temporarily apply PDF generation styles
+            reviewContent.classList.add('pdf-generation');
+
+            // Ensure content is fully visible before capture
+            const originalHeight = reviewContent.style.height;
+            reviewContent.style.height = 'auto';
+
+            const canvas = await html2canvas(reviewContent, {
+                scale: window.devicePixelRatio,
+                ignoreScroll: true,
+            });
+
+            // Restore original height
+            reviewContent.style.height = originalHeight;
+
+            // Remove PDF generation styles
+            reviewContent.classList.remove('pdf-generation');
+
             const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 190; // A4 width in mm
+            const imgWidth = 210; // A4 width in mm (for full page width)
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight); // Use 0,0 for full page
 
             // Convert to Blob
             const pdfBlob = new Blob([doc.output('blob')], { type: 'application/pdf' });
