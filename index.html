@@ -199,7 +199,8 @@
         .shift-info {
             display: grid;
             grid-template-areas:
-                "nameLabel nameInput dateLabel dateInput"
+                "nameLabel nameInput nameInput nameInput"
+                "startDateLabel startDateInput endDateLabel endDateInput"
                 "startTimeLabel startTimeInput endTimeLabel endTimeInput";
             grid-template-columns: auto 1fr auto 1fr;
             gap: 10px;
@@ -207,20 +208,25 @@
             align-items: center;
         }
 
+        /* Assigning grid areas correctly */
         .shift-info label[for="name"] { grid-area: nameLabel; }
-        shift-info input[id="name"] { grid-area: nameInput; }
+        .shift-info input[id="name"] { grid-area: nameInput; }
 
-        .shift-info label[for="date"] { grid-area: dateLabel; }
-        shift-info input[id="date"] { grid-area: dateInput; }
+        .shift-info label[for="startDate"] { grid-area: startDateLabel; }
+        .shift-info input[id="startDate"] { grid-area: startDateInput; }
+
+        .shift-info label[for="endDate"] { grid-area: endDateLabel; }
+        .shift-info input[id="endDate"] { grid-area: endDateInput; }
 
         .shift-info label[for="startTime"] { grid-area: startTimeLabel; }
-        shift-info input[id="startTime"] { grid-area: startTimeInput; }
+        .shift-info input[id="startTime"] { grid-area: startTimeInput; }
 
         .shift-info label[for="endTime"] { grid-area: endTimeLabel; }
-        shift-info input[id="endTime"] { grid-area: endTimeInput; }
+        .shift-info input[id="endTime"] { grid-area: endTimeInput; }
 
-        .shift-info input[type="date"],
-        .shift-info input[type="text"] {
+        /* Input styles */
+        .shift-info input[type="text"],
+        .shift-info input[type="date"] {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -228,12 +234,13 @@
             width: 100%;
         }
 
-        /* Responsive adjustments */
+        /* Responsive fix for smaller screens */
         @media (max-width: 768px) {
             .shift-info {
                 grid-template-areas:
                     "nameLabel nameInput"
-                    "dateLabel dateInput"
+                    "startDateLabel startDateInput"
+                    "endDateLabel endDateInput"
                     "startTimeLabel startTimeInput"
                     "endTimeLabel endTimeInput";
                 grid-template-columns: auto 1fr;
@@ -251,8 +258,11 @@
             <label for="name">Name:</label>
             <input type="text" id="name" name="name">
 
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date">
+            <label for="startDate">Shift Start Date:</label>
+            <input type="date" id="startDate" name="startDate">
+
+            <label for="endDate">Shift End Date:</label>
+            <input type="date" id="endDate" name="endDate">
 
             <label for="startTime">Shift Start Time (24hr):</label>
             <input type="text" id="startTime" name="startTime" placeholder="HH:MM">
@@ -584,7 +594,8 @@
             const hsdPriceElement = document.getElementById('hsd-price');
             const initialCashElement = document.getElementById('cashInitial');
             const nameElement = document.getElementById('name');
-            const dateElement = document.getElementById('date');
+            const startdateElement = document.getElementById('startDate');
+            const enddateElement = document.getElementById('endDate');
             const startTimeElement = document.getElementById('startTime');
             const endTimeElement = document.getElementById('endTime');
         
@@ -592,11 +603,12 @@
             const hsdPrice = hsdPriceElement?.value || "";
             const initialCash = initialCashElement?.value || "";
             const name = nameElement?.value || "";
-            const date = dateElement?.value || "";
+            const startDate = startdateElement?.value || "";
+            const endDate = enddateElement?.value || "";
             const startTime = startTimeElement?.value || "";
             const endTime = endTimeElement?.value || "";
 
-            localStorage.setItem('shiftLogData', JSON.stringify({ pumpData, lubData, cashNotes, initialCash, paymentData, settlementData, msPrice, hsdPrice, name, date, startTime, endTime }));
+            localStorage.setItem('shiftLogData', JSON.stringify({ pumpData, lubData, cashNotes, initialCash, paymentData, settlementData, msPrice, hsdPrice, name, startDate, endDate, startTime, endTime }));
             window.open('review.html', '_self');
         });
         const startTimeInput = document.getElementById('startTime');

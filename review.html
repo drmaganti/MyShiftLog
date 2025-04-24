@@ -160,7 +160,8 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Date</th>
+                    <th>Start Date</th>
+                    <th>End End</th>
                     <th>Start Time</th>
                     <th>End Time</th>
                 </tr>
@@ -168,7 +169,8 @@
             <tbody>
                 <tr>
                     <td id="name"></td>
-                    <td id="date"></td>
+                    <td id="startDate"></td>
+                    <td id="endDate"></td>
                     <td id="startTime"></td>
                     <td id="endTime"></td>
                 </tr>
@@ -215,7 +217,8 @@
             let html = '';
 
             document.getElementById('name').textContent = shiftLogData.name;
-            document.getElementById('date').textContent = shiftLogData.date;
+            document.getElementById('startDate').textContent = shiftLogData.startDate;
+            document.getElementById('endDate').textContent = shiftLogData.endDate;
             document.getElementById('startTime').textContent = shiftLogData.startTime;
             document.getElementById('endTime').textContent = shiftLogData.endTime;
 
@@ -360,6 +363,7 @@
             document.getElementById('totalSettlements').textContent = totalSettlements.toFixed(2);
 
             //Summary Table Calculations
+            // Summary Table Calculations
             const salesSummary = document.getElementById('salesSummary');
             const cashSummary = document.getElementById('cashSummary');
 
@@ -378,14 +382,29 @@
                 Settlements: ₹${totalSettlements.toFixed(2)}
             `;
 
-            // Add a new row for totals
+            // Append Total Sales and Total Cash row
             const summaryTable = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
-            const newRow = summaryTable.insertRow();
-            const salesTotalCell = newRow.insertCell(0);
-            const cashTotalCell = newRow.insertCell(1);
+            const totalsRow = summaryTable.insertRow();
+            const salesTotalCell = totalsRow.insertCell(0);
+            const cashTotalCell = totalsRow.insertCell(1);
 
             salesTotalCell.innerHTML = `<strong>Total Sales: ₹${salesTotal.toFixed(2)}</strong>`;
             cashTotalCell.innerHTML = `<strong>Total Cash: ₹${cashTotal.toFixed(2)}</strong>`;
+
+            // Append Difference row with conditional formatting
+            const diffRow = summaryTable.insertRow();
+            const diffCell = diffRow.insertCell(0);
+            diffCell.colSpan = 2;
+
+            const difference = cashTotal - salesTotal;
+            const isCashShort = difference < 0;
+            const absDiff = Math.abs(difference).toFixed(2);
+            const diffColor = isCashShort ? 'red' : 'green';
+
+            diffCell.innerHTML = `<strong>Difference: <span style="color: ${diffColor}">(${absDiff})</span></strong>`;
+
+
+
         } else {
             reviewContent.innerHTML = '<p>No data found.</p>';
         }
